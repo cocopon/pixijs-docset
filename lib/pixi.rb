@@ -30,7 +30,7 @@ class PixiDocumentParser < DocumentParser
     'Namespace' => 'Namespace',
   }
 
-  def self.each_entry(path)
+  def self.each_entry(path, rel_path)
     html = nil
     File.open(path) do |f|
       html = f.read()
@@ -43,17 +43,30 @@ class PixiDocumentParser < DocumentParser
       type = TYPE_HASH[$1]
       if type != nil
         name = File.basename($2, '.js')
-        yield name, type, nil
+        yield name, type, rel_path
+      end
+    end
+
+    # Property
+    members_h = (doc.css('h3').find {|node| node.text == 'Members'})
+    if members_h != nil
+      members_container = members_h.next_element
+      members_container.css('h4').each do |node|
+        name = node.xpath('text()').text.strip()
+        hash = node.attribute('id').to_s()
+        yield name, 'Property', "#{rel_path}##{hash}"
       end
     end
 
     # Method
-    doc.css('.methods.itemMembers li').each do |node|
-      anchor = node.css('a')
-      name = anchor.text.strip()
-      path = anchor.attribute('href').to_s()
-
-      yield name, 'Method', path
+    methods_h = (doc.css('h3').find {|node| node.text == 'Methods'})
+    if methods_h != nil
+      methods_container = methods_h.next_element
+      methods_container.css('h4').each do |node|
+        name = node.xpath('text()').text.strip()
+        hash = node.attribute('id').to_s()
+        yield name, 'Method', "#{rel_path}##{hash}"
+      end
     end
   end
 end

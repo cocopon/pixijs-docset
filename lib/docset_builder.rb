@@ -37,23 +37,22 @@ class DocsetBuilder
     if !File.exist?(@env.repos_dir)
       puts('Cloning repository...')
       system("git clone #{@env.repos_url} #{@env.repos_dir}")
-      puts('done.')
     else
       puts('Updating repository...')
       Dir.chdir(@env.repos_dir) do
         system('git reset --hard')
         system('git pull')
       end
-      puts('done.')
     end
+    puts('done.')
   end
 
   def copy_repos_files()
     if !File.exist?(@docset.documents_dir)
-      puts("Creating #{@docset.documents_dir}...")
+      print("Creating #{@docset.documents_dir}...")
       FileUtils.mkdir_p(@docset.documents_dir)
     else
-      puts("Cleaning #{@docset.documents_dir}...")
+      print("Cleaning #{@docset.documents_dir}...")
       FileUtils.rm_r(
         Dir::glob(File.join(@docset.documents_dir, '*')),
         :secure => true
@@ -129,8 +128,7 @@ class DocsetBuilder
         html_pathname = Pathname.new(html_path)
         rel_path = html_pathname.relative_path_from(doc_pathname).to_s()
 
-        @doc_parser.each_entry(html_path) do |name, type, opt_path|
-          entry_path = (opt_path != nil) ? opt_path : rel_path
+        @doc_parser.each_entry(html_path, rel_path) do |name, type, entry_path|
           dsi.add(name, type, entry_path)
           spinner.spin()
         end
