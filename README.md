@@ -29,8 +29,6 @@ Generating Docset
 	$ ruby docset.rb
 	```
 
-3. Open `docset/Pixijs.docset` and import it
-
 
 
 
