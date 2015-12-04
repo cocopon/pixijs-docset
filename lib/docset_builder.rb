@@ -122,7 +122,6 @@ class DocsetBuilder
 
       dsi.create()
 
-      # Add method entries
       doc_pathname = Pathname.new(@docset.documents_dir)
       @docset.each_document('html') do |html_path|
         html_pathname = Pathname.new(html_path)
